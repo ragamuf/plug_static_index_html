@@ -13,13 +13,13 @@ defmodule Plug.Static.IndexHtml do
   ## Example
 
       iex> Plug.Static.IndexHtml.init(at: "/doc")
-      [matcher: ~r|^.*/[^.]*$|, default_file: "index.html"]
+      [matcher: ~r|^/doc/?[^.]*$|, default_file: "index.html"]
   """
   def init([]), do: init(at: "/")
   def init(at: path), do: init(at: path, default_file: "index.html")
 
   def init(at: path, default_file: filename) do
-    [matcher: ~r|^.*/[^.]*$|, default_file: filename]
+    [matcher: ~r|^#{path}/?[^.]*$|, default_file: filename]
   end
 
   @doc """

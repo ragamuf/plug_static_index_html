@@ -28,8 +28,6 @@ defmodule PlugStaticIndexHtmlTest do
 
     result = IndexHtml.call(conn, opts)
 
-    IO.inspect("request_path is #{inspect(result)}")
-
     assert result.request_path == "/doc/index.html"
     assert result.path_info == ["doc", "index.html"]
   end
