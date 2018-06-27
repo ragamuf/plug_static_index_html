@@ -18,6 +18,22 @@ defmodule PlugStaticIndexHtmlTest do
     assert result.path_info == ["doc", "about", "index.html"]
   end
 
+  test "Transforms request path at root and not ending in / for directory" do
+    opts = IndexHtml.init(at: "/doc")
+
+    conn = %Conn{
+      request_path: "/doc",
+      path_info: ["doc"]
+    }
+
+    result = IndexHtml.call(conn, opts)
+
+    IO.inspect("request_path is #{inspect(result)}")
+
+    assert result.request_path == "/doc/index.html"
+    assert result.path_info == ["doc", "index.html"]
+  end
+
   test "Transforms request path ending in / for directory" do
     opts = IndexHtml.init(at: "/doc")
 
