@@ -13,13 +13,14 @@ defmodule Plug.Static.IndexHtml do
   ## Example
 
       iex> Plug.Static.IndexHtml.init(at: "/doc")
-      [matcher: ~r|^/doc/(.*/)?$|, default_file: "index.html"]
+      [matcher: ~r|^/doc/[^.]*$|, default_file: "index.html"]
   """
   def init([]), do: init(at: "/")
   def init(at: path), do: init(at: path, default_file: "index.html")
+
   def init(at: path, default_file: filename) do
-    path_no_slash = String.trim_trailing path, "/"
-    [matcher: ~r|^#{path_no_slash}/(.*/)?$|, default_file: filename]
+    result = [matcher: ~r|^#{path}/[^.]*$|, default_file: filename]
+    result
   end
 
   @doc """
@@ -33,10 +34,11 @@ defmodule Plug.Static.IndexHtml do
       %{path_info: ["doc", "a", "index.html"], request_path: "/doc/a/index.html"}
   """
   def call(conn, matcher: pattern, default_file: filename) do
-    if String.match? conn.request_path, pattern do
-      %{conn |
-        request_path: "#{conn.request_path}#{filename}",
-        path_info: conn.path_info ++ [filename]
+    if String.match?(conn.request_path, pattern) do
+      %{
+        conn
+        | request_path: "#{String.trim_trailing(conn.request_path, "/")}/#{filename}",
+          path_info: conn.path_info ++ [filename]
       }
     else
       conn

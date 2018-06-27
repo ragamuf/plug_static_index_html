@@ -4,8 +4,23 @@ defmodule PlugStaticIndexHtmlTest do
   alias Plug.Static.IndexHtml
   doctest IndexHtml
 
-  test "Transforms request path for directory" do
+  test "Transforms request path not ending in / for directory" do
     opts = IndexHtml.init(at: "/doc")
+
+    conn = %Conn{
+      request_path: "/doc/about",
+      path_info: ["doc", "about"]
+    }
+
+    result = IndexHtml.call(conn, opts)
+
+    assert result.request_path == "/doc/about/index.html"
+    assert result.path_info == ["doc", "about", "index.html"]
+  end
+
+  test "Transforms request path ending in / for directory" do
+    opts = IndexHtml.init(at: "/doc")
+
     conn = %Conn{
       request_path: "/doc/about/",
       path_info: ["doc", "about"]
@@ -19,6 +34,7 @@ defmodule PlugStaticIndexHtmlTest do
 
   test "Uses the supplied default filename" do
     opts = IndexHtml.init(at: "/doc", default_file: "index.md")
+
     conn = %Conn{
       request_path: "/doc/auth/",
       path_info: ["doc", "auth"]
@@ -32,6 +48,7 @@ defmodule PlugStaticIndexHtmlTest do
 
   test "Doesn't match when filename provided" do
     opts = IndexHtml.init(at: "/doc")
+
     conn = %Conn{
       request_path: "/doc/jquery.js",
       path_info: ["doc", "jquery.js"]
